@@ -20,7 +20,7 @@ class RegisterCommand {
         }
 
         let content;
-        content = fs.readFileSync('./.env.example', 'utf-8');
+        content = fs.readFileSync(rootPath + '/.env.example', 'utf-8');
         content = content.replace(/(ENDPOINT=)([\d]*)/mg, `$1${domain}`);
         content = content.replace(/(MAID=)([\d]*)/mg, `$1${maid}`);
         content = content.replace(/(USERNAME=)([\d]*)/mg, `$1${user}`);
@@ -28,6 +28,10 @@ class RegisterCommand {
         if(force || !fs.existsSync(rootPath + '/.env')) {
             console.log('writing env file!');
             fs.writeFile(rootPath + '/.env', content, { encoding: 'utf8' }, (err) => {
+                if(err) {
+                    console.error(err);
+                    process.exit(1);
+                }
                 console.log('done!');
                 process.exit();
             });

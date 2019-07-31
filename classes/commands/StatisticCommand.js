@@ -38,11 +38,11 @@ class StatisticCommand {
             res.on('data', function(data) {
                 body += data;
              });
-             res.on('end', function() {
+             res.on('end', () => {
               //here we have the full response, html or json object
                 const data = JSON.parse(body);
                 const amounts = this.getMoneyAmounts(data.result);
-                calcWorkingDays(requestData.tag).then((workingdays) => {
+                this.calcWorkingDays(requestData.tag).then((workingdays) => {
                     // console.log(amounts, workingdays, Math.round(amounts.hours / workingdays.workingHours * 100) + '%')
                     console.log("\n🎱  --- 🎱  --- 🎱  --- 🎱  --- 🎱  --- 🎱  --- 🎱  --- 🎱  --- 🎱  --- 🎱  --- 🎱")
                     console.log(`📅  From:  ${workingdays.fromDate}`); 

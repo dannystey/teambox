@@ -1,6 +1,8 @@
+#!/usr/bin/env node
 var RegisterCommand = require('./classes/commands/RegisterCommand');
 var StatisticCommand = require('./classes/commands/StatisticCommand');
-require('dotenv').config({path: __dirname + '/.env'});
+var path = require('path').dirname(require.main.filename);
+require('dotenv').config({path: path + '/.env'});
 
 let command = 'statistic';
 
@@ -11,7 +13,7 @@ if(process.argv[2]) {
 switch(command) {
     case 'register': 
         register = new RegisterCommand();
-        register.run(__dirname);
+        register.run(path);
         break;
     case 'statistic': 
         statistic = new StatisticCommand();
