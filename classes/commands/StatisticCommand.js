@@ -5,21 +5,23 @@ var serialize = require('./../helpers/SerializeHelper');
 
 class StatisticCommand {
     static command() {
-        return ' [month] ';
+        return ' [month <NUMBER> | list]';
     }
 
-    run() {
-        this.callWorkData()
+    run(withList, withMonth) {
+        this.callWorkData(withList, withMonth)
     }
 
-    callWorkData() {
-        let month = (new Date).getMonth() +1;
+    callWorkData(withList, withMonth) {
+        let month = withMonth || (new Date).getMonth() +1;
         let year = (new Date).getFullYear();
 
         const requestData = {
             _dc: '1564514147671',
             ma_id: process.env.MAID,
-            tag: `${year}-${leadingZeros(month)}-01|${year}-${leadingZeros(parseInt(month)+1)}-01`
+            tag: `${year}-${leadingZeros(month)}-01|${year}-${leadingZeros(parseInt(month)+1)}-01`,
+            _sortfield: 'tag',
+            _sortdir: 'ASC'
         };
         
         const options = {
@@ -44,26 +46,9 @@ class StatisticCommand {
                 const amounts = this.getMoneyAmounts(data.result);
                 this.calcWorkingDays(requestData.tag).then((workingdays) => {
                     // console.log(amounts, workingdays, Math.round(amounts.hours / workingdays.workingHours * 100) + '%')
-                    console.log("\n🎱  --- 🎱  --- 🎱  --- 🎱  --- 🎱  --- 🎱  --- 🎱  --- 🎱  --- 🎱  --- 🎱  --- 🎱")
+                    console.log("\n-- -- -- -- -- -- -- \n")
                     console.log(`📅  From:  ${workingdays.fromDate}`); 
                     console.log(`📅  To:    ${workingdays.toDate}`);
-        
-                    console.log("\x1b[90m",`
-                        ____
-                    ,dP9CGG88@b,
-                  ,IP  _   Y888@@b,
-                 dIi  (_)   G8888@b
-                dCII  (_)   G8888@@b
-                GCCIi     ,GG8888@@@
-                GGCCCCCCCGGG88888@@@
-                GGGGCCCGGGG88888@@@@...
-                Y8GGGGGG8888888@@@@P.....
-                 Y88888888888@@@@@P......
-                 \`Y8888888@@@@@@@P'......
-                    \`@@@@@@@@@P'.......
-                        """"........
-        
-                    `)
         
                     const percent = Math.round(amounts.hours / workingdays.workingHours * 100);
         
@@ -79,9 +64,26 @@ class StatisticCommand {
         
                     console.log("\x1b[36m", `💰  Your hour costs ${Math.round(amounts.total/amounts.hours)} €`);
                     console.log("\x1b[32m", `💰  Your work is ${Math.round(amounts.total)} € worth`);
-                    console.log(color, `🏆  You reached a billable quote of ${Math.round(amounts.hours / workingdays.workingHours * 100)}%! 🎱 ${comment}`);
-                    console.log("\n🎱  --- 🎱  --- 🎱  --- 🎱  --- 🎱  --- 🎱  --- 🎱  --- 🎱  --- 🎱  --- 🎱  --- 🎱\n")
-                
+                    console.log(color, `🏆  You reached a billable quote of ${Math.round(amounts.hours / workingdays.workingHours * 100)}%! ${comment}`);
+                    console.log("\n-- -- -- -- -- -- -- \n")
+
+                    if(withList) {
+                        console.log("\n-- -- - LIST - -- -- \n")
+
+                        this.getTasks().then((tasks) => {
+                            let jobData = data.result.map((d) => {
+                                d.job = tasks.result.filter((t) => t.id === d.job_id)[0] || null;
+                                return d;
+                            });
+    
+                            jobData.forEach((jD) => {
+                                let color = "\x1b[32m";
+                                if(jD.std < 2) color = "\x1b[33m";
+                                if(jD.std < 1) color = "\x1b[31m";
+                                console.log(color, `${(jD.tag)} | ${(jD.job ? jD.job.job_nr : null)} . ${(jD.job ? jD.job.bez : null)} : ${jD.std}h [${jD.info}]`, "\n")
+                            });
+                        });
+                    }
                 })
              })
         })
@@ -89,6 +91,34 @@ class StatisticCommand {
             console.error(error)
         })
         req.end();
+    }
+
+    getTasks() {
+        return new Promise ( (resolve, reject) => {
+            const req = https.request({
+                hostname: process.env.ENDPOINT,
+                port: 443,
+                path: '/rest/task.json?_sortfield=job_nr&_sortdir=ASC&jahr=%3E0&_limit=0&jobstatus%3Apermtime=1&aktiv=1',
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Basic ' + Buffer.from(process.env.USERNAME + ':' + process.env.PASSWORD).toString('base64')
+                } 
+            }, (res) => {
+                let body = '';
+                res.on('data', function(data) {
+                    body += data;
+                });
+                res.on('end', function() {
+                    const tasks = JSON.parse(body);
+                    resolve(tasks);
+                })
+            })
+            req.on('error', (error) => {
+                console.error(error);
+                reject();
+            })
+            req.end();
+        })
     }
 
     

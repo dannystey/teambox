@@ -10,13 +10,20 @@ if(process.argv[2]) {
     command = process.argv[2];
 }
 
+let withList = false;
+let month = null;
+
 switch(command) {
     case 'register': 
         register = new RegisterCommand();
         register.run(path);
         break;
+    case 'list':
+        withList = true;
+    case 'month':
+        month = process.argv[3] || null;
     case 'statistic': 
         statistic = new StatisticCommand();
-        statistic.run();
+        statistic.run(withList, month);
         break;
 }
