@@ -1,8 +1,11 @@
 {
   "name": "teambox",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "get your teambox statistic",
   "main": "index.js",
+  "bin": {
+    "teambox": "./index.js"
+  },
   "dependencies": {
     "dotenv": "^8.0.0"
   },
@@ -10,6 +13,6 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Danny Stey",
   "license": "ISC"
 }

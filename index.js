@@ -11,7 +11,7 @@ if(process.argv[2]) {
 switch(command) {
     case 'register': 
         register = new RegisterCommand();
-        register.run();
+        register.run(__dirname);
         break;
     case 'statistic': 
         statistic = new StatisticCommand();
