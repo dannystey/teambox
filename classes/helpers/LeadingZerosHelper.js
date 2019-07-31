@@ -1,0 +1,1 @@
+module.exports = (num) => ('0000' + num).slice(-2);
