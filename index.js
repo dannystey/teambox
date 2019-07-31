@@ -1,14 +1,46 @@
 var https = require('https');
+var fs = require('fs');
 require('dotenv').config({path: __dirname + '/.env'});
 
 let month = (new Date).getMonth() +1;
 let year = (new Date).getFullYear();
 
 
-process.argv.forEach((arg) => {
+process.argv.forEach((arg, index) => {
     if(arg.indexOf('month') === 0) {
-        let parts = arg.match(/month=([\d]*)/);
+        let parts = arg.match(/month ([\d]*)/);
         month = parts[1] || month;
+    }
+
+    // register 
+    if(arg === 'register' && index ===2 ) {
+        console.log('register case');
+
+        const domain = process.argv[index+1] || null;
+        const maid = process.argv[index+2] || null;
+        const user = process.argv[index+3] || null;
+        const password = process.argv[index+4] || null;
+
+        if(!domain || !user || !password || !maid) {
+            console.error('register usage: magic8 register <DOMAIN> <MAID> <USER> <PASSWORD>');
+            process.exit(1);
+        }
+
+        var content;
+        content = fs.readFileSync('./.env.example', 'utf-8');
+        content = content.replace(/(ENDPOINT=)([\d]*)/mg, `$1${domain}`);
+        content = content.replace(/(MAID=)([\d]*)/mg, `$1${maid}`);
+        content = content.replace(/(USERNAME=)([\d]*)/mg, `$1${user}`);
+        content = content.replace(/(PASSWORD=)([\d]*)/mg, `$1${password}`);
+        console.log(content);
+        if(!fs.existsSync(__dirname + '/.env')) {
+            console.log('writing env file');
+            fs.writeFile(__dirname + '/.env', content, { encoding: 'utf8' }, (err) => {
+                console.log('done');
+                process.exit();
+            });
+        }
+        
     }
 })
 
