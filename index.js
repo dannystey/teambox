@@ -8,7 +8,7 @@ let year = (new Date).getFullYear();
 
 process.argv.forEach((arg, index) => {
     if(arg.indexOf('month') === 0) {
-        let parts = arg.match(/month ([\d]*)/);
+        let parts = arg.match(/month=([\d]*)/);
         month = parts[1] || month;
     }
 
