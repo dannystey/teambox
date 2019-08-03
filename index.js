@@ -18,7 +18,7 @@ let month = null;
 switch(command) {
     case 'ignore':
         let ignore = new IgnoreCommand();
-        ignore.run(homedir);
+        ignore.run(homedir + '/.teambox');
         break;
     case 'register': 
         let register = new RegisterCommand();
