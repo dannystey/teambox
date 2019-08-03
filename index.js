@@ -2,8 +2,9 @@
 var RegisterCommand = require('./classes/commands/RegisterCommand');
 var StatisticCommand = require('./classes/commands/StatisticCommand');
 var IgnoreCommand = require('./classes/commands/IgnoreCommand');
+const homedir = require('os').homedir();
 var path = require('path').dirname(require.main.filename);
-require('dotenv').config({path: path + '/.env'});
+require('dotenv').config({path: homedir + '/.teambox/.env'});
 
 let command = 'statistic';
 
@@ -17,11 +18,11 @@ let month = null;
 switch(command) {
     case 'ignore':
         let ignore = new IgnoreCommand();
-        ignore.run(path);
+        ignore.run(homedir);
         break;
     case 'register': 
         let register = new RegisterCommand();
-        register.run(path);
+        register.run(path, homedir + '/.teambox');
         break;
     case 'list':
         withList = true;
