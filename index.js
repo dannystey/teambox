@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 var RegisterCommand = require('./classes/commands/RegisterCommand');
 var StatisticCommand = require('./classes/commands/StatisticCommand');
+var IgnoreCommand = require('./classes/commands/IgnoreCommand');
 var path = require('path').dirname(require.main.filename);
 require('dotenv').config({path: path + '/.env'});
 
@@ -14,8 +15,12 @@ let withList = false;
 let month = null;
 
 switch(command) {
+    case 'ignore':
+        let ignore = new IgnoreCommand();
+        ignore.run(path);
+        break;
     case 'register': 
-        register = new RegisterCommand();
+        let register = new RegisterCommand();
         register.run(path);
         break;
     case 'list':
@@ -23,7 +28,7 @@ switch(command) {
     case 'month':
         month = process.argv[3] || null;
     case 'statistic': 
-        statistic = new StatisticCommand();
+        let statistic = new StatisticCommand();
         statistic.run(withList, month);
         break;
 }
