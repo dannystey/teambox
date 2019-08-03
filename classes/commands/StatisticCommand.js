@@ -20,11 +20,12 @@ class StatisticCommand {
     callWorkData(withList, withMonth) {
         let month = withMonth || (new Date).getMonth() +1;
         let year = (new Date).getFullYear();
+        let toDate = new Date(parseDate(`${year}-${leadingZeros(parseInt(month)+1)}-01`).getTime() - 1000);
 
         const requestData = {
             _dc: '1564514147671',
             ma_id: process.env.MAID,
-            tag: `${year}-${leadingZeros(month)}-01|${year}-${leadingZeros(parseInt(month)+1)}-01`,
+            tag: `${year}-${leadingZeros(month)}-01|${toDate.getFullYear()}-${leadingZeros(toDate.getMonth()+1)}-${toDate.getDate()}`,
             _sortfield: 'tag',
             _sortdir: 'ASC'
         };
@@ -70,7 +71,7 @@ class StatisticCommand {
 
                         console.log("\x1b[36m", `💰  Your hour costs ${Math.round(amounts.total/amounts.hours)} €`);
                         console.log("\x1b[32m", `💰  Your work is ${Math.round(amounts.total)} € worth`);
-                        console.log(color, `🏆  You reached a booked quote of ${Math.round(amounts.hours / workingdays.workingHours * 100)}%! ${comment}`);
+                        console.log(color, `🏆  You reached a booked quote of ${Math.round(amounts.hours / workingdays.workingHours * 100)}% (Should: ${workingdays.workingHours}h / Booked: ${amounts.hours}h)! ${comment}`);
                         console.log("\n-- -- -- -- -- -- -- \n")
 
                         if(this.currentIgnoredDays.length) {
@@ -219,13 +220,12 @@ class StatisticCommand {
                 const fromDate = parseDate(from);
                 const toDate = parseDate(to);
                 const date = fromDate;
-                // console.log(fromDate, toDate);
             
                 let workingDays = 0;
                 const mappedHolidays = holidays.result.map((holiday) => {
                     return holiday.ftdate;
                 });
-                while(date < toDate) {
+                while(date.getTime() <= toDate.getTime()) {
                     date.setDate(fromDate.getDate() + 1);
                     // check for working day
             
@@ -237,6 +237,8 @@ class StatisticCommand {
                     else if(excludeDays.split(',').includes(currentDate)) {
                         this.currentIgnoredDays.push(currentDate);
                     }
+
+                    
                 }
             
                 const workingHours = workingDays * process.env.WORKINGHOURS;
