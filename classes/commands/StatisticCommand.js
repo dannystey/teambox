@@ -74,6 +74,23 @@ class StatisticCommand {
                         console.log(color, `🏆  You reached a booked quote of ${Math.round(amounts.hours / workingdays.workingHours * 100)}% (Should: ${workingdays.workingHours}h / Booked: ${amounts.hours}h)! ${comment}`);
                         console.log("\n-- -- -- -- -- -- -- \n")
 
+                        
+                        console.log("\x1b[36m", "HOURS PER DAY:")
+
+                        let perDay = {};
+                        data.result.forEach((d) => {
+                            perDay[d.tag] = perDay[d.tag] ? perDay[d.tag] + d.std : d.std;
+                        });
+                        for(var date in perDay) {
+                            let color = "\x1b[32m";
+                            if(perDay[date] < 4) color = "\x1b[33m";
+                            if(perDay[date] < 2) color = "\x1b[31m";
+                            console.log(color, `${date}: `, perDay[date]);
+                        }
+
+                        console.log("\n-- -- -- -- -- -- -- \n")
+                        
+
                         if(this.currentIgnoredDays.length) {
                             console.log("\x1b[36m", "IGNORED DAYS:")
 
