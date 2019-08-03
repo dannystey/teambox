@@ -9,6 +9,7 @@ class StatisticCommand {
     }
 
     run(withList, withMonth) {
+        this.currentIgnoredDays = [];
         this.callWorkData(withList, withMonth)
     }
 
@@ -52,7 +53,7 @@ class StatisticCommand {
         
                     const percent = Math.round(amounts.hours / workingdays.workingHours * 100);
         
-                    let comment = 'Awesome!';
+                    let comment = 'Awesome! 🕺';
                     if(percent < 90) comment = 'Great! 🍺';
                     if(percent < 85) comment = 'Hey, almost reached the goal! 🏃‍'
                     if(percent < 80) comment = 'Hey, you are on the right path! 🚜'
@@ -64,8 +65,17 @@ class StatisticCommand {
         
                     console.log("\x1b[36m", `💰  Your hour costs ${Math.round(amounts.total/amounts.hours)} €`);
                     console.log("\x1b[32m", `💰  Your work is ${Math.round(amounts.total)} € worth`);
-                    console.log(color, `🏆  You reached a billable quote of ${Math.round(amounts.hours / workingdays.workingHours * 100)}%! ${comment}`);
+                    console.log(color, `🏆  You reached a booked quote of ${Math.round(amounts.hours / workingdays.workingHours * 100)}%! ${comment}`);
                     console.log("\n-- -- -- -- -- -- -- \n")
+
+                    if(this.currentIgnoredDays.length) {
+                        console.log("\x1b[36m", "IGNORED DAYS:")
+
+                        this.currentIgnoredDays.forEach((day) => console.log('',day))
+    
+                        console.log("\n-- -- -- -- -- -- -- \n")
+                    }
+                    
 
                     if(withList) {
                         console.log("\n-- -- - LIST - -- -- \n")
@@ -161,6 +171,9 @@ class StatisticCommand {
                     const excludeDays = process.env.EXCLUDEDAYS || '';
                     if(date.getDay() > 1 && !mappedHolidays.includes(currentDate) && !excludeDays.split(',').includes(currentDate)) {
                         workingDays +=1;
+                    }
+                    else if(excludeDays.split(',').includes(currentDate)) {
+                        this.currentIgnoredDays.push(currentDate);
                     }
                 }
             

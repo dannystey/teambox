@@ -1,6 +1,6 @@
 {
   "name": "teambox",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "get your teambox statistic",
   "main": "index.js",
   "bin": {
