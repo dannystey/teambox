@@ -99,7 +99,7 @@ class StatisticCommand {
                             console.log("\n-- -- -- -- -- -- -- \n")
                         }
 
-                        if(absences) {
+                        if(Object.values(absences).length) {
                             console.log("\x1b[36m", "ABSENCE DAYS:")
 
                             Object.values(absences).forEach((day) => console.log('', `${day.date} - ${day.tooltip}`))

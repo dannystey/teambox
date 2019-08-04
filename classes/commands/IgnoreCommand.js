@@ -47,7 +47,8 @@ class IgnoreCommand {
             });
         }
         else {
-            console.log('please register the teambox first!');
+            console.error('please register the teambox first!');
+            process.exit(1);
         }
 
     }

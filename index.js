@@ -2,6 +2,7 @@
 var RegisterCommand = require('./classes/commands/RegisterCommand');
 var StatisticCommand = require('./classes/commands/StatisticCommand');
 var IgnoreCommand = require('./classes/commands/IgnoreCommand');
+var TransferCommand = require('./classes/commands/TransferCommand');
 const homedir = require('os').homedir();
 var path = require('path').dirname(require.main.filename);
 require('dotenv').config({path: homedir + '/.teambox/.env'});
@@ -31,5 +32,9 @@ switch(command) {
     case 'statistic': 
         let statistic = new StatisticCommand();
         statistic.run(withList, month);
+        break;
+    case 'transfer': 
+        let transfer = new TransferCommand();
+        transfer.run();
         break;
 }

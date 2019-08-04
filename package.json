@@ -8,7 +8,8 @@
   },
   "dependencies": {
     "dotenv": "^8.0.0",
-    "form-data": "^2.5.0"
+    "form-data": "^2.5.0",
+    "yesno": "^0.3.0"
   },
   "devDependencies": {},
   "scripts": {
