@@ -3,8 +3,17 @@ var leadingZeros = require('./../helpers/LeadingZerosHelper');
 
 class Timeular {
     constructor() {
-        this.apiKey = 'NTg5NzFfZDYwZWZiYTAxYmY5NDgzMWE0MTJjZGVhZGQ0NTVlNjM=';
-        this.apiSecret = 'MjZmY2NkMTVhODE5NDAxMDkyMmYzZTBiNTVkZTM3NDA=';
+        if(process.env.TIMEULAR_API_KEY && process.env.TIMEULAR_API_KEY) {
+            this.apiKey = process.env.TIMEULAR_API_KEY;
+            this.apiSecret = process.env.TIMEULAR_API_KEY;
+        }
+        else {
+            console.error('timeular isnt connected right now. register it first with "teambox transfer timeular connect <API_KEY> <API_SECRET>"');
+        }
+    }
+
+    connect(apiKey, apiSecret) {
+        
     }
 
     getActivities() {

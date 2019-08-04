@@ -16,6 +16,10 @@ class TransferCommand {
             this.staffData = staffData;
             if(process.argv[3] === 'timeular') {
                 this.provider = new Timeular();
+                if(process.argv[4] === 'connect'){
+                    this.provider.connect(process.argv[5], process.argv[6]);
+                    return;
+                }
                 this.day = process.argv[4] ? new Date(process.argv[4]) : new Date;
                 this.provider.getTimeEntries(this.day.getFullYear(), this.day.getMonth() +1, this.day.getDate()).then((timeEntries) => {
                     timeEntries.forEach((entry) => this.transferToTeambox(entry));
