@@ -76,7 +76,6 @@ class Timeular {
 
     format(timeEntries) {
         let formatedResult = [];
-        console.log(this.apiKey);
         timeEntries.forEach((entry) => {
             const info = entry.note && entry.note.text ? entry.note.text.split('|') : [];
             if(info.length < 3) {
