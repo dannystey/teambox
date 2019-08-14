@@ -1,19 +1,47 @@
 var https = require('https');
+var fs = require('fs');
 var leadingZeros = require('./../helpers/LeadingZerosHelper');
 
 class Timeular {
     constructor() {
-        if(process.env.TIMEULAR_API_KEY && process.env.TIMEULAR_API_KEY) {
+        if(process.env.TIMEULAR_API_KEY && process.env.TIMEULAR_API_SECRET) {
             this.apiKey = process.env.TIMEULAR_API_KEY;
-            this.apiSecret = process.env.TIMEULAR_API_KEY;
+            this.apiSecret = process.env.TIMEULAR_API_SECRET;
         }
         else {
             console.error('timeular isnt connected right now. register it first with "teambox transfer timeular connect <API_KEY> <API_SECRET>"');
         }
     }
 
-    connect(apiKey, apiSecret) {
-        
+    connect(storagePath, apiKey, apiSecret, force) {
+        if(!apiKey || !apiSecret) {
+            console.log('usage: teambox transfer timeular connect <APIKEY> <APISECRET>')
+        }
+        if(fs.existsSync(storagePath + '/.env')) {
+            let content;
+            content = fs.readFileSync(storagePath + '/.env', 'utf-8');
+            if(content.indexOf('TIMEULAR_API') === -1) {
+                content += "\nTIMEULAR_API_KEY=" + `"${apiKey}"`;
+                content += "\nTIMEULAR_API_SECRET=" + `"${apiSecret}"`;
+            }
+            else {
+                content = content.replace(/(TIMEULAR_API_KEY=)([\d]*)/mg, `$1${apiKey}`);
+                content = content.replace(/(TIMEULAR_API_SECRET=)([\d]*)/mg, `$1${apiSecret}`);
+            }
+
+            console.log('writing env file!');
+            fs.writeFile(storagePath + '/.env', content, { encoding: 'utf8' }, (err) => {
+                if(err) {
+                    console.error(err);
+                    process.exit(1);
+                }
+                console.log('done!');
+                process.exit();
+            });
+        }
+        else {
+            console.log('.env is missing');
+        }
     }
 
     getActivities() {
@@ -48,8 +76,9 @@ class Timeular {
 
     format(timeEntries) {
         let formatedResult = [];
+        console.log(this.apiKey);
         timeEntries.forEach((entry) => {
-            const info = entry.note.text.split('|')
+            const info = entry.note && entry.note.text ? entry.note.text.split('|') : [];
             if(info.length < 3) {
                 console.log("\x1b[31m", `not a valid format for the entry ${entry.activity.name}! please write in the note field <JOB_NR>|<PHASE>|<ACTIVITY>|<DESC>`)
                 return true;

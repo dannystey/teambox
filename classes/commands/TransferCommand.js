@@ -11,22 +11,35 @@ class TransferCommand {
         return 'transfer <PROVIDER>';
     }
 
-    run() {
+    run(storagePath) {
         this.getEmployee().then((staffData) => {
             this.staffData = staffData;
             if(process.argv[3] === 'timeular') {
                 this.provider = new Timeular();
+                console.log('provider is timeular')
                 if(process.argv[4] === 'connect'){
-                    this.provider.connect(process.argv[5], process.argv[6]);
+                    console.log('connect to timeular')
+                    this.provider.connect(storagePath, process.argv[5], process.argv[6]);
                     return;
                 }
                 this.day = process.argv[4] ? new Date(process.argv[4]) : new Date;
+                this.entryIndex = 0;
                 this.provider.getTimeEntries(this.day.getFullYear(), this.day.getMonth() +1, this.day.getDate()).then((timeEntries) => {
-                    timeEntries.forEach((entry) => this.transferToTeambox(entry));
+                    this.timeEntries = timeEntries;
+                    this.next();
                 })
             }
         })
         
+    }
+
+    next() {
+        if(!this.timeEntries[this.entryIndex]) {
+            console.log('no further entries left.');
+            process.exit();
+        }
+        this.transferToTeambox(this.timeEntries[this.entryIndex]);
+        this.entryIndex += 1;
     }
 
     getEmployee() {
@@ -98,6 +111,7 @@ class TransferCommand {
             }
             else {
                 console.log('no job for job_nr: ' + entry.job_nr)
+                this.next();
             }
         })
     }
@@ -111,12 +125,13 @@ class TransferCommand {
                 call('POST', '/rest/workdata.json', workData, 'formdata')
                 .then((response) => {
                     console.log(response.success ? 'Done' : 'Failed');
+                    this.next();
                 })
-
                 
             }
             else {
                 console.log("\x1b[33m", `-> ${entry.job_nr} to ${workData.tag} for ${workData.std}h was skipped`);
+                this.next();
             }
         });
 
