@@ -31,7 +31,20 @@ class ByeCommand {
                 const data = JSON.parse(body);
                 console.log("\x1b[35m", '👋  say bye to:')
 
-                data.result.filter((employee) => employee.austritt && new Date(employee.austritt.split('-')[0],parseInt(employee.austritt.split('-')[1])-1,employee.austritt.split('-')[2]) > new Date).forEach((employee) => console.log(employee.fullname, "🚀  \t --- \t " , employee.austritt) );
+                data.result.filter((employee) => {
+                    return employee.austritt;
+                }).forEach((employee) => {
+                    if(employee.id == process.env.MAID) {
+                        console.log("\x1b[31m", employee.austritt, "💣  \t --- \t ", employee.fullname ) 
+                    }
+                    else if(new Date(employee.austritt.split('-')[0], parseInt(employee.austritt.split('-')[1])-1 ,employee.austritt.split('-')[2]) > new Date) {
+
+                        console.log("\x1b[35m", employee.austritt, "☠️  \t --- \t ", employee.fullname ) 
+                    }
+                    else {
+                        //console.log("\x1b[36m", employee.austritt, "  \t --- \t ", employee.fullname ) 
+                    }
+                })
              });
         })
         req.on('error', (error) => {
